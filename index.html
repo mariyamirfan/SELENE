@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SELENE — Watch the Earth rise</title>
+<meta name="description" content="SELENE is a concept for lunar expeditions: six to twenty-eight days, one view nobody forgets — the Earth rising over the Moon.">
+<meta name="theme-color" content="#05070c">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Manrope:wght@300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--void:#05070c;--void2:#0b0f18;--reg:#c9ccd3;--dust:#8b909b;--earth:#6fb6ff;--sun:#f2e6c9;color-scheme:dark;
+--disp:"Michroma","Arial Black",sans-serif;--sans:"Manrope",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{background:var(--void);scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--void);color:var(--reg);font:300 1rem/1.65 var(--sans);overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:1.5px solid var(--earth);outline-offset:3px}
+.mono{font:400 .6875rem/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.disp{font-family:var(--disp);font-weight:400}
+h1,h2,h3,p{margin:0}
+h2{font-family:var(--disp);font-weight:400;font-size:clamp(1.5rem,4vw,3.25rem);line-height:1.1;color:#fff;max-width:20ch}
+header{position:fixed;inset:0 0 auto;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:calc(1rem + env(safe-area-inset-top,0px)) 4vw 1rem;color:#fff;background:linear-gradient(var(--void),transparent)}
+header .mark{font-family:var(--disp);letter-spacing:.36em;font-size:.9rem}
+header nav{display:flex;gap:1.6rem}
+header nav a{color:rgb(255 255 255/.75)}header nav a:hover{color:#fff}
+@media(max-width:700px){header nav a:not(:last-child){display:none}}
+/* hero */
+#top{height:440svh;position:relative}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden;background:var(--void)}
+.ly{position:absolute;inset:0;will-change:transform}
+.sky{background:radial-gradient(120% 80% at 66% 55%,#0e1a30,var(--void) 70%)}
+.earth{display:grid;place-items:center}
+.earth i{position:absolute;left:66%;top:48%;width:min(46vw,52vh);aspect-ratio:1;margin:calc(min(46vw,52vh)/-2) 0 0 calc(min(46vw,52vh)/-2);border-radius:50%;
+background:radial-gradient(circle at 34% 30%,#e9f4ff 0,#6fb6ff 22%,#2457a6 55%,#0a1b3d 85%);box-shadow:0 0 80px 8px rgb(111 182 255/.35),inset -18px -14px 50px rgb(0 0 0/.55)}
+.earth i::after{content:"";position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse 30% 14% at 38% 38%,rgb(255 255 255/.55),transparent 70%),radial-gradient(ellipse 24% 10% at 60% 62%,rgb(255 255 255/.4),transparent 70%)}
+.ly img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% 50%}@media(min-width:768px){.ly img{object-position:center}}
+.ly svg{position:absolute;inset:0;width:100%;height:100%}
+.title{position:absolute;inset:26% 0 auto;text-align:center;pointer-events:none;opacity:0}
+.title h1{font:400 clamp(2.25rem,8.6vw,9rem)/1 var(--disp);color:#fff;letter-spacing:.24em;margin-right:-.24em;text-shadow:0 4px 40px rgb(0 0 0/.5)}
+.title p{margin-top:1rem;color:rgb(201 204 211/.8)}
+.veil{position:absolute;inset:0;pointer-events:none;display:grid;place-content:center;text-align:center;
+background:radial-gradient(60% 50% at 30% 40%,rgba(170,184,210,.55),transparent 70%),radial-gradient(50% 60% at 75% 60%,rgba(120,140,180,.5),transparent 70%),radial-gradient(80% 80% at 50% 50%,rgba(20,26,40,.85),rgba(5,7,12,.95))}
+.veil b{display:block;margin-top:.8rem;font:400 .8rem var(--disp);letter-spacing:.5em;color:#fff}
+canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hud{position:absolute;inset:1rem;pointer-events:none;opacity:0;color:rgb(201 204 211/.75);font-size:.625rem}
+.hud>*{position:absolute}.hud .tl{top:4rem;left:.6rem}.hud .tr{top:4rem;right:.6rem;text-align:right}.hud .bl{bottom:.6rem;left:.6rem;max-width:60%}.hud .br{bottom:.6rem;right:.6rem}
+.hud .frame{inset:0;border:1px solid rgb(201 204 211/.25);border-radius:2px}
+.hud em{font-style:normal;color:var(--earth)}
+/* sections */
+.pin{position:relative;background:var(--void)}
+.pin>.in{position:sticky;top:0;height:100svh;overflow:hidden}
+.eyebrow{color:var(--earth);margin-bottom:1rem}
+/* log */
+#log{height:340svh}
+#log .in{display:flex;align-items:center;padding-top:4rem}
+.lhead{flex:0 0 32vw;padding:0 2rem 0 6vw;position:relative;z-index:2}
+.lhead p.b{margin-top:1.2rem;max-width:26rem;color:rgb(201 204 211/.7)}
+.prog{margin-top:2rem;display:flex;gap:1rem;align-items:center;color:var(--dust)}
+.prog span.bar{position:relative;width:8rem;height:1px;background:rgb(255 255 255/.15)}
+.prog span.bar i{position:absolute;inset:0;background:var(--earth);transform:scaleX(0);transform-origin:left}
+#track{display:flex;gap:1.75rem;list-style:none;margin:0;padding:0;will-change:transform}
+#track li{flex:0 0 clamp(16rem,24vw,23rem);transform-origin:bottom}
+.shot{position:relative;aspect-ratio:3/4;overflow:hidden;border-radius:6px;background:var(--void2)}
+.shot img{position:absolute;left:-14%;top:-8%;width:128%;height:116%;object-fit:cover;will-change:transform}
+.shot .tag{position:absolute;top:.75rem;left:.75rem;background:rgb(5 7 12/.7);padding:.25rem .5rem;border-radius:3px;color:#fff;font-size:.625rem}
+figcaption{margin-top:1rem}figcaption b{display:block;font:400 .9rem var(--disp);letter-spacing:.08em;color:#fff;text-transform:uppercase}
+figcaption span{display:block;margin-top:.4rem;font-size:.875rem;color:rgb(201 204 211/.65)}
+@media(max-width:800px){#log .in{flex-direction:column;justify-content:center;align-items:flex-start}.lhead{flex:none;padding:0 1rem;margin-bottom:1.5rem}.lhead .b,.prog{display:none}#track{padding-left:1rem}#track li{flex-basis:70vw}}
+/* trajectory */
+#trajectory{height:380svh}
+#trajectory .in{display:flex;flex-direction:column;padding:5.5rem 6vw 1.5rem}
+.thead{display:flex;flex-wrap:wrap;gap:.5rem 2rem;justify-content:space-between;align-items:flex-end}
+.thead .km{color:var(--dust)}.thead .km b{color:#fff;font-weight:400;font-variant-numeric:tabular-nums}
+.tmap{flex:1;min-height:0;display:flex;align-items:center}
+.tmap svg{width:100%;height:auto;max-height:100%}
+.leg{display:grid;gap:1rem 2.5rem;border-top:1px solid rgb(255 255 255/.1);padding-top:1.2rem;grid-template-columns:auto 1fr auto;align-items:end}
+.leg h3{font:400 1.2rem var(--disp);letter-spacing:.08em;color:#fff;text-transform:uppercase}.leg p{margin-top:.4rem;max-width:40rem;color:rgb(201 204 211/.7)}
+.dots{display:flex;gap:.4rem}.dots i{width:2rem;height:4px;border-radius:2px;background:rgb(255 255 255/.15);transition:background .5s}.dots i.on{background:var(--earth)}
+@media(max-width:700px){.leg{grid-template-columns:1fr}}
+/* missions */
+#missions{padding:8rem 6vw}
+.mgrid{display:grid;gap:1rem;margin-top:3.5rem;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));list-style:none;padding:0}
+.card{position:relative;overflow:hidden;display:flex;flex-direction:column;padding:2rem;border-radius:8px;background:rgb(11 15 24/.6);box-shadow:0 0 0 1px rgb(255 255 255/.1);transition:transform .4s,box-shadow .4s}
+.card:hover{transform:translateY(-6px);box-shadow:0 0 0 1px rgb(255 255 255/.25)}
+.card.f{background:var(--void2);box-shadow:0 0 0 1px rgb(111 182 255/.6)}
+.card svg{position:absolute;top:-2.5rem;right:-2.5rem;width:12rem;height:12rem;color:rgb(255 255 255/.1);transition:transform 1.2s}.card:hover svg{transform:rotate(45deg)}
+.card h3{font:400 1.2rem var(--disp);letter-spacing:.14em;color:#fff;text-transform:uppercase}
+.badge{align-self:flex-start;margin-bottom:1rem;background:var(--earth);color:var(--void);padding:.25rem .5rem;border-radius:3px;font-size:.625rem}
+.days{margin:1.5rem 0 2rem;display:flex;align-items:baseline;gap:.5rem}.days b{font:400 3.5rem/1 var(--disp);color:#fff}
+.card ul{list-style:none;margin:0 0 2.2rem;padding:1.5rem 0 0;border-top:1px solid rgb(255 255 255/.1);display:grid;gap:.6rem}
+.card li{display:flex;gap:.75rem;font-size:.9375rem;color:rgb(201 204 211/.8)}.card li::before{content:"";width:4px;height:4px;margin-top:.7rem;border-radius:50%;background:var(--earth);flex:none}
+.btn{margin-top:auto;padding:.9rem 1.2rem;border-radius:4px;text-align:center;color:#fff;box-shadow:0 0 0 1px rgb(255 255 255/.25);transition:.2s}.btn:hover{background:#fff;color:var(--void)}
+.f .btn{background:var(--earth);color:var(--void);box-shadow:none}.f .btn:hover{background:#fff}
+.note{color:rgb(201 204 211/.5)}
+/* reserve */
+#reserve{position:relative;overflow:hidden;padding:0 6vw 8rem}
+.rise{position:absolute;left:50%;bottom:-62vw;width:90vw;aspect-ratio:1;transform:translateX(-50%);border-radius:50%;overflow:hidden;box-shadow:0 0 90px rgb(111 182 255/.35);pointer-events:none}
+.rise img{position:absolute;width:251%;max-width:none;left:-114.9%;top:-20.7%}
+.rg{position:relative;z-index:1;display:grid;gap:3rem 4rem;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));border-top:1px solid rgb(255 255 255/.1);padding-top:6rem}
+.cd{display:flex;gap:.6rem;margin-top:.8rem}.cd div{min-width:4.25rem;padding:.8rem .6rem;text-align:center;border:1px solid rgb(255 255 255/.2);border-radius:3px}
+.cd b{display:block;font:400 1.6rem var(--disp);color:#fff;font-variant-numeric:tabular-nums}.cd span{font-size:.625rem;color:var(--dust)}
+form{display:grid;gap:.8rem;align-content:start}
+label span{display:block;margin-bottom:.35rem;color:rgb(201 204 211/.6)}
+input,select{width:100%;padding:.9rem 1rem;border:0;border-radius:4px;background:rgb(255 255 255/.04);color:#fff;font:inherit;box-shadow:0 0 0 1px rgb(255 255 255/.15);outline:0}
+input:focus,select:focus{box-shadow:0 0 0 1px var(--earth)}input:user-invalid{box-shadow:0 0 0 1px rgb(248 113 113/.7)}select option{background:var(--void)}
+button{padding:1rem;border:0;border-radius:4px;background:#fff;color:var(--void);cursor:pointer;transition:background .2s}button:hover{background:var(--earth)}
+#st{min-height:1.4rem;font-size:.8125rem;color:rgb(201 204 211/.7)}
+footer{border-top:1px solid rgb(255 255 255/.1);padding:2rem 6vw;display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;color:rgb(201 204 211/.5)}
+@media(prefers-reduced-motion:reduce){.card,.card svg{transition:none}.bounce{animation:none!important}}
+.bounce{display:inline-block;animation:b 1.6s ease-in-out infinite}@keyframes b{50%{transform:translateY(5px)}}
+</style>
+</head>
+<body>
+<header>
+  <a href="#top" class="mark" aria-label="SELENE — back to top">☾ SELENE</a>
+  <nav aria-label="Primary"><a class="mono" href="#log">Log</a><a class="mono" href="#trajectory">Trajectory</a><a class="mono" href="#missions">Missions</a><a class="mono" href="#reserve" style="background:#fff;color:var(--void);padding:.6rem 1rem;border-radius:4px">Reserve a seat</a></nav>
+</header>
+<main>
+<section id="top" aria-label="Earthrise">
+ <div class="stage">
+  <div class="ly" data-l="sky"><img src="images/sky.webp" alt="" aria-hidden="true" fetchpriority="high"></div>
+  <div class="ly" data-l="earth"><img src="images/earth.webp" alt="" aria-hidden="true"></div>
+  <div class="ly" data-l="moon"><img src="images/moonscape.webp" alt="" aria-hidden="true"></div>
+  <div class="title" id="title"><h1>EARTHRISE</h1><p class="mono">A concept for lunar expeditions</p></div>
+  <div class="ly" data-l="frame"><img src="images/frame.webp" alt="" aria-hidden="true"></div>
+  <div class="ly" data-l="astro"><img src="images/astronaut.webp" alt="" aria-hidden="true"></div>
+  <div class="ly" data-l="ground"><img src="images/ground.webp" alt="" aria-hidden="true"><div style="position:absolute;inset:100% 0 auto;height:110vh;background:var(--void)"></div></div>
+  <div class="veil" id="veil"><p class="mono" style="color:rgb(201 204 211/.8)">A concept for lunar expeditions</p><b>SCROLL TO CLEAR THE DUST</b><span class="bounce" style="margin-top:1.5rem;color:var(--dust)">↓</span></div>
+  <canvas id="dust" aria-hidden="true"></canvas>
+  <div class="hud mono" id="hud" aria-hidden="true"><div class="frame"></div><div class="tl"><p id="clk">T+ 00:00:00</p><p style="opacity:.55">Mission clock</p></div><div class="tr"><p>Earth elev <em id="elev">0.0°</em></p><p style="opacity:.55">Above horizon</p></div><div class="bl">Mare Tranquillitatis · 0.67°N 23.47°E</div><div class="br">Scroll <span class="bounce">↓</span></div></div>
+ </div>
+</section>
+
+<section id="log" class="pin" aria-labelledby="lt"><div class="in">
+ <div class="lhead"><p class="mono eyebrow">Mission log</p><h2 id="lt">The first holiday that leaves the planet.</h2><p class="b">Four days out, a week on the surface, and one view nobody has ever forgotten. This is the trip, frame by frame.</p>
+  <div class="prog mono" aria-hidden="true"><span><b id="cnt" style="color:#fff;font-weight:400">01</b> / 04</span><span class="bar"><i id="bar"></i></span></div></div>
+ <ol id="track"></ol>
+</div></section>
+
+<section id="trajectory" class="pin" aria-labelledby="tt"><div class="in">
+ <div class="thead"><div><p class="mono eyebrow">Trajectory</p><h2 id="tt">384,400 km, drawn as you scroll.</h2></div><p class="mono km">Distance flown <b id="km">0</b> km</p></div>
+ <div class="tmap"><svg viewBox="0 0 1200 600" role="img" aria-label="The flight path from Earth to the Moon, drawn in four legs.">
+  <defs><clipPath id="ec"><circle cx="230" cy="320" r="92"/></clipPath><radialGradient id="ms" cx="35%" cy="35%" r="75%"><stop offset="0" stop-color="#e4e6ea"/><stop offset=".7" stop-color="#8b909b"/><stop offset="1" stop-color="#2a2e36"/></radialGradient>
+  <radialGradient id="eg" cx="34%" cy="30%" r="75%"><stop offset="0" stop-color="#e9f4ff"/><stop offset=".25" stop-color="#6fb6ff"/><stop offset=".65" stop-color="#2457a6"/><stop offset="1" stop-color="#0a1b3d"/></radialGradient>
+  <radialGradient id="ag"><stop offset=".8" stop-color="#6fb6ff" stop-opacity=".35"/><stop offset="1" stop-color="#6fb6ff" stop-opacity="0"/></radialGradient></defs>
+  <g id="stars" fill="#fff"></g>
+  <circle cx="230" cy="320" r="108" fill="url(#ag)"/><image href="images/earth.webp" x="-71.5" y="190.8" width="458.9" height="259.5" clip-path="url(#ec)" preserveAspectRatio="none"/>
+  <circle cx="985" cy="300" r="46" fill="url(#ms)"/><g fill="#5d626c" opacity=".6"><circle cx="971" cy="290" r="7"/><circle cx="997" cy="314" r="5"/><circle cx="1003" cy="282" r="3.5"/></g>
+  <g id="ghost"></g><g id="legs"></g>
+  <g id="cap" transform="translate(230 192)"><circle r="11" fill="#6fb6ff" opacity=".25"/><circle r="4.5" fill="#fff"/></g>
+  <g font-family="IBM Plex Mono,monospace" font-size="13" letter-spacing="2" fill="#8b909b"><text x="230" y="470" text-anchor="middle">EARTH</text><text x="985" y="416" text-anchor="middle">MOON</text></g>
+ </svg></div>
+ <div class="leg"><p class="mono" style="color:var(--earth)" id="lday"></p><div id="lbody" aria-live="polite"><h3 id="ltitle"></h3><p id="ltext"></p></div><div class="dots" id="dots" aria-hidden="true"></div></div>
+</div></section>
+
+<section id="missions" aria-labelledby="mt">
+ <div style="display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:flex-end"><div><p class="mono eyebrow">Missions</p><h2 id="mt">Three ways to leave.</h2></div><p class="mono note">Concept missions — durations illustrative.</p></div>
+ <ol class="mgrid" id="mgrid"></ol>
+</section>
+
+<section id="reserve" aria-labelledby="rt"><div class="rise" aria-hidden="true"><img src="images/earth.webp" alt=""></div><div class="rg">
+ <div><p class="mono eyebrow">Reserve</p><h2 id="rt">Put your name on the manifest.</h2><p style="margin-top:1.2rem;max-width:28rem;color:rgb(201 204 211/.7)">No payment, no commitment. We’ll write when the next window opens.</p>
+  <p class="mono note" style="margin-top:2.5rem">Next launch window (concept)</p><div class="cd" id="cd" role="timer"></div></div>
+ <form id="f" novalidate aria-describedby="st">
+  <label><span class="mono">Name</span><input name="name" required autocomplete="name" placeholder="As it should appear on the manifest"></label>
+  <label><span class="mono">Email</span><input name="email" type="email" required autocomplete="email" placeholder="you@earth.com"></label>
+  <label><span class="mono">Mission</span><select name="mission"></select></label>
+  <button class="mono" type="submit">Add me to the manifest</button><p id="st" role="status"></p>
+ </form>
+</div></section>
+</main>
+<footer class="mono"><span>☾ SELENE · a concept</span><span>© 2026 · Created by Mariyam Babar · Imagery generated for this concept</span><a href="#top">Back to the surface ↑</a></footer>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),lerp=(a,b,t)=>a+(b-a)*t,range=(v,a,b)=>clamp((v-a)/(b-a)),eo=t=>1-Math.pow(1-t,3);
+const pin=el=>{const r=el.getBoundingClientRect(),vh=innerHeight;return{p:clamp(-r.top/Math.max(1,r.height-vh)),r,vh}};
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const IMG=["m1-launch","m2-orbit","m3-base","m4-walk"];
+const LOG=[['T−0','Launch','Nine minutes of thunder, then silence and the curve of the Earth.',210],['Day 3','Lunar orbit','The far side scrolls past the window. Your hand on the glass.',230],['Day 4','Base Tranquillity','Pressurised domes, a hot meal, and a skylight pointed home.',35],['Day 5','First steps','Footprints that will outlast every building you have ever seen.',20]];
+const LEGS=[['Day 0','Parking orbit','Two laps of the Earth while the crew and craft are checked.'],['Day 0','Trans-lunar injection','A six-minute burn and you are on your way. No turning back for three days.'],['Day 3','Lunar orbit insertion','The engine fires behind the Moon, out of contact with Earth. Then: capture.'],['Day 4','Descent','Twelve minutes from orbit to the dust of Tranquillity.']];
+const MIS=[['Orbiter',6,['Two lunar orbits','Far-side flyover','Earthrise from orbit']],['Lander',10,['Four nights at Base Tranquillity','Two surface EVAs','Earthrise from the surface'],1],['Resident',28,['A full lunar day and night','Rover traverse to the highlands','Science crew rotation']]];
+const PATHS=['M230 192 a128 128 0 1 1 -0.1 0 a128 128 0 0 1 106 57','M336 249 C 520 40, 820 70, 965 216','M965 216 a86 86 0 1 1 -0.1 0.2 a86 86 0 0 1 20 1','M985 214 Q 1025 230 1015 264'];
+const NS='http://www.w3.org/2000/svg';
+/* build */
+$('#track').innerHTML=LOG.map((l,i)=>`<li><figure style="margin:0"><div class="shot"><img src="images/${IMG[i]}.webp" width="840" height="1120" loading="lazy" decoding="async" alt="${l[1]}: ${l[2]}"><span class="tag mono">${l[0]}</span></div><figcaption style="display:flex;gap:1rem"><span class="mono" style="color:var(--earth)">0${i+1}</span><span style="margin:0"><b>${l[1]}</b><span>${l[2]}</span></span></figcaption></figure></li>`).join('');
+$('#mgrid').innerHTML=MIS.map(m=>`<li class="card${m[3]?' f':''}"><svg viewBox="0 0 200 200" aria-hidden="true">${Array.from({length:Math.ceil(m[1]/7)},(_,k)=>`<ellipse cx="100" cy="100" rx="${40+k*18}" ry="${18+k*8}" fill="none" stroke="currentColor" transform="rotate(${-20+k*14} 100 100)"/>`).join('')}<circle cx="100" cy="100" r="9" fill="currentColor"/></svg>${m[3]?'<span class="badge mono">Most requested</span>':''}<h3>${m[0]}</h3><p class="days"><b>${m[1]}</b><span class="mono note">days</span></p><ul>${m[2].map(x=>`<li>${x}</li>`).join('')}</ul><a class="btn mono" href="#reserve" data-m="${m[0]}">Join the ${m[0]} list</a></li>`).join('');
+$('select').innerHTML=MIS.map(m=>`<option value="${m[0]}"${m[3]?' selected':''}>${m[0]} — ${m[1]} days</option>`).join('');
+$('#stars').innerHTML=Array.from({length:70},(_,i)=>`<circle cx="${i*173%1200}" cy="${i*97%600}" r="${i%7?0.7:1.4}" opacity="${0.15+(i*37%50)/100}"/>`).join('');
+$('#ghost').innerHTML=PATHS.map(d=>`<path d="${d}" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="1.5" stroke-dasharray="3 6"/>`).join('');
+const legEls=PATHS.map((d,i)=>{const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('pathLength',1);p.setAttribute('fill','none');p.setAttribute('stroke',i==1?'#6fb6ff':'#f2e6c9');p.setAttribute('stroke-width',2);p.setAttribute('stroke-linecap','round');p.style.strokeDasharray='1 1';p.style.strokeDashoffset=1;$('#legs').appendChild(p);return p});
+$('#dots').innerHTML=LEGS.map(()=>'<i></i>').join('');
+/* one loop */
+const L={};$$('[data-l]').forEach(e=>L[e.dataset.l]=e);
+const setL=(n,y,s=1,o=1)=>{L[n].style.transform=`translate3d(0,${y}vh,0) scale(${s})`;L[n].style.opacity=o};
+const cv=$('#dust'),cx=cv.getContext('2d');let seed=11;const rnd=()=>((seed=seed*16807%2147483647)/2147483647);
+const motes=Array.from({length:140},()=>({x:rnd(),y:rnd(),r:.4+rnd()*1.6,s:.3+rnd(),a:.2+rnd()*.6}));
+const fit=()=>{const d=Math.min(devicePixelRatio||1,2);cv.width=cv.clientWidth*d;cv.height=cv.clientHeight*d};fit();addEventListener('resize',fit);
+let lastT=0,lastP=-1,lastLog=-1,lastTr=-1,curLeg=-1;
+function frame(t){
+ const dt=lastT?Math.min(.1,(t-lastT)/1000):1/60;lastT=t;
+ /* hero */
+ {const {p,r}=pin($('#top'));
+  if(r.bottom>0){
+   const veil=1-range(p,0,.18);
+   if(veil>.001){const w=cv.clientWidth,h=cv.clientHeight,d=cv.width/Math.max(1,w);cx.setTransform(d,0,0,d,0,0);cx.clearRect(0,0,w,h);cx.fillStyle='#dfe6f2';
+    for(const m of motes){if(!RM){m.x=(m.x+.006*m.s*dt)%1;m.y-=.004*m.s*dt;if(m.y<0)m.y+=1}cx.globalAlpha=m.a*veil;cx.beginPath();cx.arc(m.x*w,(m.y-p*.6)*h,m.r*(1+p*4),0,7);cx.fill()}cx.globalAlpha=1}
+   if(Math.abs(p-lastP)>=.00005){lastP=p;
+    const exit=range(p,.7,1),settle=eo(range(p,0,.5)),v=range(p,0,.18);
+    $('#veil').style.opacity=veil;$('#veil').style.transform=`translate3d(0,${-v*24}vh,0) scale(${1+v*.25})`;cv.style.opacity=veil;
+    setL('sky',lerp(0,-6,p),lerp(1.14,1,settle));
+    const rise=eo(range(p,.04,.5));setL('earth',lerp(34,0,rise)-exit*12,lerp(.92,1,rise));
+    setL('moon',lerp(9,0,settle)-exit*26);
+    const rim=eo(range(p,.28,.58));setL('frame',-exit*44,lerp(1.6,1,rim),rim);
+    const up=eo(range(p,.36,.62));setL('astro',lerp(28,0,up)-exit*58,1,clamp(up*2));
+    setL('ground',lerp(36,0,eo(range(p,.34,.6)))-exit*78);
+    const tIn=eo(range(p,.08,.24)),tOut=range(p,.42,.52),ti=$('#title');
+    ti.style.opacity=tIn*(1-tOut);ti.firstChild.style.letterSpacing=`${lerp(.6,.24,tIn)}em`;ti.style.transform=`translate3d(0,${-p*6}vh,0)`;ti.style.filter=tIn<.99?`blur(${(1-tIn)*10}px)`:'';
+    $('#hud').style.opacity=range(p,.02,.1)*(1-range(p,.62,.72));
+    const s=p*5400,z=n=>String(Math.floor(n)).padStart(2,'0');$('#clk').textContent=`T+ ${z(s/3600)}:${z(s%3600/60)}:${z(s%60)}`;$('#elev').textContent=(rise*12.4).toFixed(1)+'°'}}}
+ /* log */
+ {const root=$('#log'),{p,r,vh}=pin(root);
+  if(r.bottom>=0&&r.top<=vh&&Math.abs(p-lastLog)>=.00005){lastLog=p;const tr=$('#track'),vw=innerWidth,k=range(p,.04,.96);
+   tr.style.transform=`translate3d(${-k*Math.max(0,tr.offsetLeft+tr.scrollWidth-vw*.94)}px,0,0)`;
+   let n=0,best=1e9;$$('#track li').forEach((c,i)=>{const b=c.getBoundingClientRect(),off=(b.left+b.width/2-vw*(vw>800?.62:.5))/vw,a=clamp(Math.abs(off)*1.6);
+    c.style.opacity=1-a*.55;c.style.transform=`scale(${1-a*.07})`;c.querySelector('img').style.transform=`translate3d(${off*-60}px,0,0)`;if(Math.abs(off)<best){best=Math.abs(off);n=i}});
+   $('#bar').style.transform=`scaleX(${k})`;$('#cnt').textContent='0'+(n+1)}}
+ /* trajectory */
+ {const {p,r,vh}=pin($('#trajectory'));
+  if(r.bottom>=0&&r.top<=vh&&Math.abs(p-lastTr)>=.00005){lastTr=p;const u=range(p,.06,.92)*4,s=clamp(Math.floor(u),0,3);
+   if(s!==curLeg){curLeg=s;const b=$('#lbody');$('#lday').textContent=`${LEGS[s][0]} · Leg ${s+1}/4`;$('#ltitle').textContent=LEGS[s][1];$('#ltext').textContent=LEGS[s][2];
+    if(!RM)b.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:600,easing:'cubic-bezier(.2,.7,.1,1)'});$$('#dots i').forEach((d,i)=>d.classList.toggle('on',i<=s))}
+   legEls.forEach((pa,i)=>{const k=eo(clamp(u-i));pa.style.strokeDashoffset=1-k;if(i===s){const pt=pa.getPointAtLength(pa.getTotalLength()*k);$('#cap').setAttribute('transform',`translate(${pt.x} ${pt.y})`)}});
+   $('#km').textContent=Math.round(eo(clamp(u-1))*384400).toLocaleString('en-US')}}
+ requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+/* anchors */
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;e.preventDefault();
+ if(a.dataset.m)$('select').value=a.dataset.m;
+ const h=a.getAttribute('href'),t=h==='#top'?0:$(h).getBoundingClientRect().top+scrollY;scrollTo({top:t,behavior:RM?'auto':'smooth'})});
+/* countdown */
+const WIN=new Date('2031-07-20T20:17:00Z').getTime();
+setInterval(tick,1000);tick();
+function tick(){const s=Math.max(0,Math.floor((WIN-Date.now())/1000));const u=[['Days',Math.floor(s/86400)],['Hrs',Math.floor(s%86400/3600)],['Min',Math.floor(s%3600/60)],['Sec',s%60]];
+ $('#cd').innerHTML=u.map(([l,v])=>`<div><b>${String(v).padStart(2,'0')}</b><span class="mono">${l}</span></div>`).join('');$('#cd').setAttribute('aria-label',`${u[0][1]} days until the next launch window`)}
+/* form */
+$('#f').addEventListener('submit',e=>{e.preventDefault();const f=e.target;if(!f.checkValidity()){$('#st').textContent='Name and a valid email, please — the manifest is strict.';f.reportValidity();return}
+ const d=new FormData(f);location.href=`mailto:crew@selene.space?subject=${encodeURIComponent('Manifest: '+d.get('mission'))}&body=${encodeURIComponent(`Name: ${d.get('name')}\nEmail: ${d.get('email')}\nMission: ${d.get('mission')}`)}`;
+ $('#st').textContent='Your mail app should be open with your request drafted. If not: crew@selene.space.'});
+</script>
+</body>
+</html>
